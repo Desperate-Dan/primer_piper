@@ -1,0 +1,6 @@
+#ignore all the nextflow dot files!
+.nextflow*
+
+#Currently ignore nextflow outputs in this dir
+output
+work
