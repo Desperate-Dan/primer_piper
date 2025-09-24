@@ -5,6 +5,7 @@ process pickPrimers {
     debug true
 
     input:
+    val ambig_val
     path in_alignment
     
     output:
@@ -13,7 +14,7 @@ process pickPrimers {
 
     script:
     """
-    varvamp single -a 10 ${in_alignment} ${in_alignment.simpleName}
+    varvamp single -a ${ambig_val} ${in_alignment} ${in_alignment.simpleName}
     """
 }
 

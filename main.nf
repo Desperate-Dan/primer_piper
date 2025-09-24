@@ -6,8 +6,9 @@ include { pickPrimers; splitPrimers; checkFamilycov; treeBuilder } from './modul
 workflow primer_picker_wf {
     //Define the input channels
     inAlignment_ch = Channel.value("${params.alignment}")
+    inAmbig_ch = Channel.value("${params.ambig}")
     //Run varvamp on input alignments
-    pickPrimers(inAlignment_ch)
+    pickPrimers(inAmbig_ch, inAlignment_ch)
     //Split primer output to pairs
     splitPrimers(pickPrimers.out.new_primers)
     //mfeprimer index and spec on generated primers
