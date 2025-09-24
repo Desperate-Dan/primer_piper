@@ -197,4 +197,5 @@ if __name__ == "__main__":
     refs = sys.argv[2]
     metadata = sys.argv[3]
     host_metadata = sys.argv[4]
-    tree_builder(treefile=treefile,refs=refs,metadata=metadata,host_metadata=host_metadata)
+    title = sys.argv[5]
+    tree_builder(treefile=treefile,refs=refs,metadata=metadata,host_metadata=host_metadata,title=title)

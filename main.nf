@@ -1,15 +1,17 @@
 #!/usr/bin/env nextflow
 
 //Get the modules for the pipeline
-include { pickPrimers; checkFamilycov; treeBuilder } from './modules/main_pipeline.nf'
+include { pickPrimers; splitPrimers; checkFamilycov; treeBuilder } from './modules/main_pipeline.nf'
 
 workflow primer_picker_wf {
     //Define the input channels
     inAlignment_ch = Channel.value("${params.alignment}")
-    //Eun varvamp on input alignments
+    //Run varvamp on input alignments
     pickPrimers(inAlignment_ch)
+    //Split primer output to pairs
+    splitPrimers(pickPrimers.out.new_primers)
     //mfeprimer index and spec on generated primers
-    checkFamilycov(inAlignment_ch, pickPrimers.out.new_primers)
+    checkFamilycov(inAlignment_ch, splitPrimers.out.new_split.flatten())
     //slurp in relevent files
     inTree_ch = Channel.value("${params.tree}")
     inTreemeta_ch = Channel.value("${projectDir}/resources/metadata/all_names.txt")

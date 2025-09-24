@@ -17,6 +17,25 @@ process pickPrimers {
     """
 }
 
+process splitPrimers {
+    //If there are multiple prospective primer pairs, we need to split them out before checking family coverage
+    conda "${HOME}/miniconda3/envs/code_hole"
+    publishDir "output/varvamp"
+
+    debug true
+
+    input:
+    path new_primers
+
+    output:
+    path("potential_primers_*.fasta"), emit: new_split
+
+    script:
+    """
+    python3 ${projectDir}/resources/scripts/primer_splitter.py ${new_primers}
+    """
+}
+
 process checkFamilycov {
     publishDir "output/mfeprimer"
 
@@ -24,15 +43,15 @@ process checkFamilycov {
     
     input:
     path in_alignment
-    path new_primers
+    path new_split
 
     output:
-    path("${in_alignment.simpleName}_family_coverage.txt"), emit: hits_file
+    path("${in_alignment.simpleName}_*.txt"), emit: hits_file
 
     script:
     """
     ~/repositories/MFEprimer/mfeprimer-3.3.1-linux-amd64 index -i ${in_alignment}
-    ~/repositories/MFEprimer/mfeprimer-3.3.1-linux-amd64 spec -i ${new_primers} -d ${in_alignment} -c 6 -o ${in_alignment.simpleName}_family_coverage.txt
+    ~/repositories/MFEprimer/mfeprimer-3.3.1-linux-amd64 spec -i ${new_split} -d ${in_alignment} -c 6 -o ${in_alignment.simpleName}_${new_split.simpleName}.txt
     """
 }
 
@@ -50,11 +69,11 @@ process treeBuilder {
     path in_host
 
     output:
-    path("primercounter*")
+    path("${hits_file.simpleName}*")
 
     script:
     """
-    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file}
-    python3 ${projectDir}/resources/scripts/tree_builder_script.py ${in_tree} ./primercounter_ref_amplicons.csv ${in_meta} ${in_host}
+    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
+    python3 ${projectDir}/resources/scripts/tree_builder_script.py ${in_tree} ./${hits_file.simpleName}_ref_amplicons.csv ${in_meta} ${in_host} ${hits_file.simpleName}
     """
 }
