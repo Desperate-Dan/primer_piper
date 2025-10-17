@@ -16,70 +16,40 @@ else:
     out_name = "primercounter"
 
 if re.search(".gz", input_file):
-    with gzip.open (input_file, "rt") as file:
-        primer_dict = defaultdict(set)
-        individual_primers_dict = {}
-        individual_primers_amplicons_dict = defaultdict(set)
-        ref_amplicons_dict = defaultdict(set)
-        pairs_dict = defaultdict(set)
-        for line in file:
-            if re.search(">Amp_", line):
-    #This bit of code counts the number of times each primer is part of an amplicon
-    #Probably not a meaningful metric as will inflate count of static primers that match with a redundant primer binding site. 
-                if line.split()[1] in individual_primers_dict.keys():
-                    individual_primers_dict[line.split()[1]] += 1
-                else:
-                    individual_primers_dict[line.split()[1]] = 1
-                if line.split()[3] in individual_primers_dict.keys():
-                    individual_primers_dict[line.split()[3]] += 1
-                else:
-                    individual_primers_dict[line.split()[3]] = 1
-    #This bit of code counts specific primer involvement in amplicons 
-                individual_primers_amplicons_dict[line.split()[1]].add(line.split()[5])
-                individual_primers_amplicons_dict[line.split()[3]].add(line.split()[5])
-    #This bit of code is looking at what ref the predicted amplicon is hitting and which region in that ref
-                ref_amplicons_dict[line.split()[5].split(":")[0]].add(line.split()[5].split(":")[1])
-                
-    #This bit of code below gets the primer, removes the suffix of which number it is, and adds the amplicon position to a set
-    #This in theory gives a number to how many amplicons a primer contributes to, while removing multiple hits to the same site
-                primer_dict[line.split()[1].split(".")[0]].add(line.split()[5])
-                primer_dict[line.split()[3].split(".")[0]].add(line.split()[5])
-    #This bit of code compares the f and r primers of an amplicon
-                pair = line.split()[1].split("_")[0] + "_F_and_" + line.split()[3].split("_")[0] + "_R"
-                pairs_dict[pair].add(line.split()[5])
-        
+    file = gzip.open (input_file, "rt")
 else:
-    with open (input_file, "r") as file:
-        primer_dict = defaultdict(set)
-        individual_primers_dict = {}
-        individual_primers_amplicons_dict = defaultdict(set)
-        ref_amplicons_dict = defaultdict(set)
-        pairs_dict = defaultdict(set)
-        for line in file:
-            if re.search(">Amp_", line):
-    #This bit of code counts the number of times each primer is part of an amplicon
-    #Probably not a meaningful metric as will inflate count of static primers that match with a redundant primer binding site. 
-                if line.split()[1] in individual_primers_dict.keys():
-                    individual_primers_dict[line.split()[1]] += 1
-                else:
-                    individual_primers_dict[line.split()[1]] = 1
-                if line.split()[3] in individual_primers_dict.keys():
-                    individual_primers_dict[line.split()[3]] += 1
-                else:
-                    individual_primers_dict[line.split()[3]] = 1
-    #This bit of code counts specific primer involvement in amplicons 
-                individual_primers_amplicons_dict[line.split()[1]].add(line.split()[5])
-                individual_primers_amplicons_dict[line.split()[3]].add(line.split()[5])
-    #This bit of code is looking at what ref the predicted amplicon is hitting and which region in that ref
-                ref_amplicons_dict[line.split()[5].split(":")[0]].add(line.split()[5].split(":")[1])
-
-    #This bit of code below gets the primer, removes the suffix of which number it is, and adds the amplicon position to a set
-    #This in theory gives a number to how many amplicons a primer contributes to, while removing multiple hits to the same site
-                primer_dict[line.split()[1].split(".")[0]].add(line.split()[5])
-                primer_dict[line.split()[3].split(".")[0]].add(line.split()[5])
-    #This bit of code compares the f and r primers of an amplicon
-                pair = line.split()[1].split("_")[0] + "_F_and_" + line.split()[3].split("_")[0] + "_R"
-                pairs_dict[pair].add(line.split()[5])
+    file = open(input_file, "r")
+primer_dict = defaultdict(set)
+individual_primers_dict = {}
+individual_primers_amplicons_dict = defaultdict(set)
+ref_amplicons_dict = defaultdict(set)
+pairs_dict = defaultdict(set)
+for line in file:
+    if re.search(">Amp_", line):
+#This bit of code counts the number of times each primer is part of an amplicon
+#Probably not a meaningful metric as will inflate count of static primers that match with a redundant primer binding site. 
+        if line.split()[1] in individual_primers_dict.keys():
+            individual_primers_dict[line.split()[1]] += 1
+        else:
+            individual_primers_dict[line.split()[1]] = 1
+        if line.split()[3] in individual_primers_dict.keys():
+            individual_primers_dict[line.split()[3]] += 1
+        else:
+            individual_primers_dict[line.split()[3]] = 1
+#This bit of code counts specific primer involvement in amplicons 
+        individual_primers_amplicons_dict[line.split()[1]].add(line.split()[5])
+        individual_primers_amplicons_dict[line.split()[3]].add(line.split()[5])
+#This bit of code is looking at what ref the predicted amplicon is hitting and which region in that ref
+        ref_amplicons_dict[line.split()[5].split(":")[0]].add(line.split()[5].split(":")[1])
+        
+#This bit of code below gets the primer, removes the suffix of which number it is, and adds the amplicon position to a set
+#This in theory gives a number to how many amplicons a primer contributes to, while removing multiple hits to the same site
+        primer_dict[line.split()[1].split(".")[0]].add(line.split()[5])
+        primer_dict[line.split()[3].split(".")[0]].add(line.split()[5])
+#This bit of code compares the f and r primers of an amplicon
+        pair = line.split()[1].split("_")[0] + "_F_and_" + line.split()[3].split("_")[0] + "_R"
+        pairs_dict[pair].add(line.split()[5])
+file.close()
 
 primer_count_dict = {}
 for k, v in primer_dict.items():

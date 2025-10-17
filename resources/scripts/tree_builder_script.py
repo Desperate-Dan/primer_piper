@@ -1,4 +1,4 @@
-#!/user/bin/env/ python3
+#!/usr/bin/env python3
 
 #Boilerplate for the imports needed for the scripts, and a few extras.
 import sys

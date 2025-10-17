@@ -38,6 +38,7 @@ process splitPrimers {
 }
 
 process checkFamilycov {
+    //Running MFEprimer to check if the new primers produce an amplicon from the input alignment
     publishDir "output/mfeprimer"
 
     debug true
@@ -53,6 +54,28 @@ process checkFamilycov {
     """
     ~/repositories/MFEprimer/mfeprimer-3.3.1-linux-amd64 index -i ${in_alignment}
     ~/repositories/MFEprimer/mfeprimer-3.3.1-linux-amd64 spec -i ${new_split} -d ${in_alignment} -c 6 -o ${in_alignment.simpleName}_${new_split.simpleName}.txt
+    """
+}
+
+process checkCovprop {
+    //Probably a python script to do this?
+    //Plan to check how many unique refs are in the XXX_ref_amplicons.csv file, then pop those out of the original alignment file before running the primer picking pipeline again.
+    //Going to check the idea of "clustering" seqs before primer picking too.
+    //Potentially complicated by the fact that there could be multiple potential primer pairs from the primer picking stage - what's a sensible way to handle?
+    //Could check if the multiple primers "add" anything, ie cover more species.
+    conda "${HOME}/miniconda3/envs/code_hole"
+    publishDir "output/trees"
+
+    debug true
+
+    input:
+    path hits_file
+    path in_alignment 
+    path in_host //will leave this as may be needed in the future if we set a criteria on viral host etc
+
+    script:
+    """
+    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
     """
 }
 
@@ -73,8 +96,8 @@ process treeBuilder {
     path("${hits_file.simpleName}*")
 
     script:
+    //This won't work anymore, need to adust inputs.
     """
-    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
     python3 ${projectDir}/resources/scripts/tree_builder_script.py ${in_tree} ./${hits_file.simpleName}_ref_amplicons.csv ${in_meta} ${in_host} ${hits_file.simpleName}
     """
 }

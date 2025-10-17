@@ -4,3 +4,5 @@
 #Currently ignore nextflow outputs in this dir
 output
 work
+results
+scratch.nf
