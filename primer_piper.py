@@ -28,13 +28,6 @@ if __name__ == "__main__":
         nextflow_runner(input_alignment,input_tree,input_ambig,iteration)
 
         refs_covered_list = []
-        with open(f"{os.getcwd()}/output/Coverage_poportion_{iteration}.csv", "r") as iteration_file:
-            for line in iteration_file:
-                refs_covered_list.append(float(line.split(",")[2]))
-                if (line.split(",")[0] == "Iteration_1"):
-                    alignment_size = float(line.split(",")[3])
-        cumulative_covered = sum(refs_covered_list)
-        proportion = (cumulative_covered/alignment_size) * 100
 
         while True:
             with open(f"{os.getcwd()}/output/Coverage_poportion_{iteration}.csv", "r") as iteration_file:

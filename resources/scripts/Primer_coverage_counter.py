@@ -59,10 +59,10 @@ def alignment_popper(input_alignment, ref_set, input_iteration):
             else:
                 SeqIO.write(record,output_handle,"fasta")
 
-def iteration_writer(alignment_size,refs_covered_count,iteration):
+def iteration_writer(alignment_size,refs_covered_count,iteration,max_primer_list):
     proportion = (refs_covered_count/alignment_size) * 100
     with open(f"Coverage_poportion_{iteration}.csv", "a") as output:
-        output.write(f"Iteration_{iteration},{proportion},{refs_covered_count},{alignment_size}")
+        output.write(f"Iteration_{iteration},{proportion},{refs_covered_count},{alignment_size},{max_primer_list}\n")
 
 if __name__ == "__main__":
     # Parse the inputs, expect `input_alignment primer1_ref_amplicons primer2_ref_amplicons...`
@@ -75,4 +75,4 @@ if __name__ == "__main__":
     max_primer_list, refs_covered_count, ref_set = fun_with_sets(ref_hits_dict,input_iteration)
     primer_output(max_primer_list,input_iteration)
     alignment_popper(input_alignment, ref_set, input_iteration)
-    iteration_writer(alignment_size,refs_covered_count,input_iteration)
+    iteration_writer(alignment_size,refs_covered_count,input_iteration,max_primer_list)
