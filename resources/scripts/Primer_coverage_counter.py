@@ -4,6 +4,9 @@
 # a target value (ie 75% of family members; may have to define that separately to feed the nextflow "recurse" method), write a file out with those
 # primers in, "pop" out the references that have already been covered from the alignment file, then allow the primer generation to restart.
 
+# Initial plan was to use Nextflow's .recurse method. It isn't clear though that it would work with the .collect needed in this workflow as it stands. 
+# The quickest change will be too make python do the iteration. An unsatisfying but workable solution.
+
 import sys
 from Bio import SeqIO
 from collections import defaultdict

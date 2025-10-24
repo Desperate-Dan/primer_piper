@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 //Get the modules for the pipeline
-include { pickPrimers; splitPrimers; checkFamilycov; cheackCovprop; treeBuilder } from './modules/main_pipeline.nf'
+include { pickPrimers; splitPrimers; checkFamilycov; treeBuilder } from './modules/main_pipeline.nf'
 
 workflow primer_picker_wf {
     //Define the input channels
@@ -15,8 +15,6 @@ workflow primer_picker_wf {
     checkFamilycov(inAlignment_ch, splitPrimers.out.new_split.flatten())
     //slurp in relevent files
     inHosts_ch = Channel.value("${projectDir}/resources/metadata/host_accession_curated.tsv")
-    checkCovprop(...)
-
     inTree_ch = Channel.value("${params.tree}")
     inTreemeta_ch = Channel.value("${projectDir}/resources/metadata/all_names.txt")
     treeBuilder(inTree_ch, checkFamilycov.out.hits_file, inTreemeta_ch, inHosts_ch)
