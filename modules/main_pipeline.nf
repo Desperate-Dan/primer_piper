@@ -98,6 +98,7 @@ process treeBuilder {
     script:
     //This won't work anymore, need to adust inputs.
     """
+    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
     python3 ${projectDir}/resources/scripts/tree_builder_script.py ${in_tree} ./${hits_file.simpleName}_ref_amplicons.csv ${in_meta} ${in_host} ${hits_file.simpleName}
     """
 }
