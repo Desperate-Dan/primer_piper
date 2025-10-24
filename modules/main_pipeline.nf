@@ -57,6 +57,24 @@ process checkFamilycov {
     """
 }
 
+process countCovprop {
+    conda "${HOME}/miniconda3/envs/code_hole"
+    publishDir "output/"
+
+    debug true
+
+    input:
+    path hits_file
+
+    output:
+    path("${hits_file.simpleName}_ref_amplicons.csv"), emit: ref_counts
+
+    script:
+    """
+    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
+    """
+}
+
 process checkCovprop {
     //Probably a python script to do this?
     //Plan to check how many unique refs are in the XXX_ref_amplicons.csv file, then pop those out of the original alignment file before running the primer picking pipeline again.
@@ -64,18 +82,23 @@ process checkCovprop {
     //Potentially complicated by the fact that there could be multiple potential primer pairs from the primer picking stage - what's a sensible way to handle?
     //Could check if the multiple primers "add" anything, ie cover more species.
     conda "${HOME}/miniconda3/envs/code_hole"
-    publishDir "output/trees"
+    publishDir "output/", mode: 'copy'
 
     debug true
 
     input:
-    path hits_file
     path in_alignment 
-    path in_host //will leave this as may be needed in the future if we set a criteria on viral host etc
+    path in_refCounts
+    val iteration
+
+    output:
+    path("updated_alignment_*.aln")
+    path("Coverage_poportion_*.csv")
+
 
     script:
     """
-    python3 ${projectDir}/resources/scripts/primer_counter_waspp_ref_counter.py ${hits_file} ${hits_file.simpleName}
+    python3 ${projectDir}/resources/scripts/Primer_coverage_counter.py ${in_alignment} ${iteration} ${in_refCounts}
     """
 }
 
