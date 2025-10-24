@@ -6,3 +6,6 @@ output
 work
 results
 scratch.nf
+test.nf
+input.txt
+simple_script.py
